@@ -76,3 +76,46 @@ def test_yakit_gostergesi_tek_adimda_tukenme():
     from uzay_oyunu.akis import yakit_gostergesi
     assert list(yakit_gostergesi(15, 25)) == [0]
 
+
+# ==========================================
+# Görev 3 – Seyir defteri boru hattı testleri
+# ==========================================
+
+def test_boru_hatti_toplam_yakit():
+    """Odev dokumanindaki toplam yakit (88) boru hatti testi."""
+    from uzay_oyunu.akis import satirlari_oku, ayristir
+    from pathlib import Path
+
+    yol = Path(__file__).parent.parent / "veri" / "seyir.txt"
+    toplam = sum(y for _, _, y in ayristir(satirlari_oku(str(yol))))
+    assert toplam == 88
+
+
+def test_boru_hatti_uzun_yolculuklar():
+    """Odev dokumanindaki 10'dan buyuk uzun yolculuklar testi."""
+    from uzay_oyunu.akis import satirlari_oku, ayristir, uzun_yolculuklar
+    from pathlib import Path
+
+    yol = Path(__file__).parent.parent / "veri" / "seyir.txt"
+    kayitlar = ayristir(satirlari_oku(str(yol)))
+    hedefler = [h for _, h, _ in uzun_yolculuklar(kayitlar, 10)]
+    assert hedefler == ["sirius", "centauri", "orion", "kara_delik"]
+
+
+def test_boru_hatti_tembel_degerlendirme():
+    """Boru hatti asamalarinin listeye okumayip generator dondurdugunu dogrular."""
+    import types
+    from uzay_oyunu.akis import satirlari_oku, ayristir, uzun_yolculuklar
+    from pathlib import Path
+
+    yol = Path(__file__).parent.parent / "veri" / "seyir.txt"
+    g_satir = satirlari_oku(str(yol))
+    assert isinstance(g_satir, types.GeneratorType)
+
+    g_ayristir = ayristir(g_satir)
+    assert isinstance(g_ayristir, types.GeneratorType)
+
+    g_uzun = uzun_yolculuklar(g_ayristir, 10)
+    assert isinstance(g_uzun, types.GeneratorType)
+
+

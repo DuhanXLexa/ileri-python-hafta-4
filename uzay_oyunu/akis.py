@@ -40,3 +40,62 @@ def yakit_gostergesi(yakit: int, tuketim: int) -> Generator[int, None, None]:
         kalan = max(0, kalan - tuketim)
         yield kalan
 
+
+def satirlari_oku(yol: str) -> Generator[str, None, None]:
+    """Dosyayi satir satir okuyan ve gereksiz satirlari suzen uretec.
+
+    Dosyanin tamamini tek seferde bellege almaz (tembel degerlendirme).
+    Bos satirlari ve '#' ile baslayan yorum satirlarini atlar.
+
+    Args:
+        yol: Okunacak dosyanin dosya yolu.
+
+    Yields:
+        str: Bosluklari temizlenmis gecerli satir metni.
+    """
+    with open(yol, mode="r", encoding="utf-8") as dosya:
+        for satir in dosya:
+            temiz = satir.strip()
+            if not temiz or temiz.startswith("#"):
+                continue
+            yield temiz
+
+
+def ayristir(satirlar: Generator[str, None, None]) -> Generator[tuple[str, str, int], None, None]:
+    """Seyir defteri satirlarini kaynak, hedef ve yakit demetlerine donusturen uretec.
+
+    Her satir 'kaynak -> hedef yakit' formatindadir.
+
+    Args:
+        satirlar: Satir ureteci veya yinelenebilir satir dizisi.
+
+    Yields:
+        tuple[str, str, int]: (kaynak, hedef, yakit) demeti.
+    """
+    for satir in satirlar:
+        sol, sag = satir.split("->")
+        kaynak = sol.strip()
+        hedef, yakit_str = sag.strip().rsplit(maxsplit=1)
+        yield kaynak, hedef, int(yakit_str)
+
+
+def uzun_yolculuklar(
+    kayitlar: Generator[tuple[str, str, int], None, None],
+    esik: int,
+) -> Generator[tuple[str, str, int], None, None]:
+    """Yakiti verilen esikten buyuk olan kayitlari suzen uretec.
+
+    Verileri bellekte listeye donusturmeden akis halinde suzer.
+
+    Args:
+        kayitlar: (kaynak, hedef, yakit) demeti ureteci.
+        esik: Minimum yakit esik degeri (esikten buyuk olanlar gecer).
+
+    Yields:
+        tuple[str, str, int]: Esigi asan (kaynak, hedef, yakit) kaydi.
+    """
+    for kayit in kayitlar:
+        if kayit[2] > esik:
+            yield kayit
+
+
