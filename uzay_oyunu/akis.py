@@ -132,4 +132,70 @@ def rota_sayaci(baglantilar: dict[str, list[str]]):
     return rota_sayisi
 
 
+# ============================================================================
+# Bonus (+10) – zamanlayici üreteci ve meşgul bekleme (busy waiting)
+# ============================================================================
+
+def zamanlayici(aralik: float) -> Generator[bool, None, None]:
+    """Verilen zaman araligi doldugunda True, henuz dolmadiginda False ureten
+    mesgul bekleme (busy waiting) ureteci.
+
+    Her adimda saati kontrol eder. Aralik asildiginda True uretip bir sonraki
+    hedef zamani belirler.
+
+    Args:
+        aralik: Saniye cinsinden tetiklenme araligi.
+
+    Yields:
+        bool: Aralik dolduysa True, dolmadiysa False.
+    """
+    import time
+
+    hedef: float = time.perf_counter() + aralik
+    while True:
+        simdi: float = time.perf_counter()
+        if simdi >= hedef:
+            hedef += aralik
+            yield True
+        else:
+            yield False
+
+
+def tik_tak_programi(
+    toplam_sure: float = 10.0, yazdir: bool = True
+) -> list[tuple[float, str]]:
+    """10 saniye boyunca her 2 saniyede 'tik', her 5 saniyede 'tak' yazdiran program.
+
+    Mesgul bekleme mantigiyla calisir: CPU surekli dongude saati kontrol eder.
+
+    Args:
+        toplam_sure: Programin toplam calisma suresi (varsayilan 10 saniye).
+        yazdir: Konsola print yapilip yapilmayacagi.
+
+    Returns:
+        list[tuple[float, str]]: (gecen_sure, mesaj) olay listesi.
+    """
+    import time
+
+    tik = zamanlayici(2.0)
+    tak = zamanlayici(5.0)
+
+    olaylar: list[tuple[float, str]] = []
+    baslangic = time.perf_counter()
+
+    while (time.perf_counter() - baslangic) <= toplam_sure:
+        gecen = time.perf_counter() - baslangic
+        if next(tik):
+            olaylar.append((round(gecen, 2), "tik"))
+            if yazdir:
+                print(f"[{gecen:.2f}s] tik")
+        if next(tak):
+            olaylar.append((round(gecen, 2), "tak"))
+            if yazdir:
+                print(f"[{gecen:.2f}s] tak")
+
+    return olaylar
+
+
+
 

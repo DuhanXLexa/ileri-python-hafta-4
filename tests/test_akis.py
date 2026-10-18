@@ -238,5 +238,36 @@ def test_hizli_yolculuk_partial():
     assert yolculuk(30, 3.0) == hizli_yolculuk(30)
 
 
+# ==========================================
+# Bonus (+10) – zamanlayici testleri
+# ==========================================
+
+def test_zamanlayici_aralik_dolunca_true():
+    """zamanlayici uretecinin aralik dolana kadar False, dolunca True urettigini test eder."""
+    import time
+    from uzay_oyunu.akis import zamanlayici
+
+    g = zamanlayici(0.03)
+    # Hemen cagrilinca henuz sure dolmadigi icin False donmeli
+    assert next(g) is False
+
+    # 0.03 saniyeden biraz fazla bekleyelim (mesgul bekleme ile)
+    bas = time.perf_counter()
+    while time.perf_counter() - bas < 0.035:
+        pass
+
+    # Sure doldugunda True donmelidir
+    assert next(g) is True
+
+
+def test_tik_tak_programi_calisma():
+    """tik_tak_programi fonksiyonunun calismasini ve olay dondurmesini test eder (hizli test: 0.1s)."""
+    from uzay_oyunu.akis import tik_tak_programi
+
+    olaylar = tik_tak_programi(toplam_sure=0.01, yazdir=False)
+    assert isinstance(olaylar, list)
+
+
+
 
 

@@ -42,3 +42,41 @@
 * **Hızlanma Oranı:** Yaklaşık **944.264 kat** daha hızlı
 
 > **Değerlendirme:** Önbelleksiz özyinelemede dallanma faktörü nedeniyle işlem karmaşıklığı $O(b^{\text{adim}})$ mertebesinde üstel olarak büyür. `@lru_cache` sayesinde daha önce hesaplanan `(gezegen, kalan_adim)` durumları hafızada tutularak tekrar hesaplanmaz ve karmaşıklık $O(V \times \text{adim})$ mertebesine (doğrusal zamana) iner.
+
+---
+
+## Görev 5 – Okunaklılık Karşılaştırması (`map/filter/reduce` vs Liste Üreteçleri)
+
+Python'un tasarım felsefesi (The Zen of Python - PEP 20) *"Readability counts"* (Okunabilirlik önemlidir) ve *"Simple is better than complex"* ilkelerini temel alır.
+
+* **`map` ve `filter`:** Genellikle `lambda` ifadelerine ihtiyaç duyarlar ve sonuçları bir üreteç olduğu için doğrudan okunabilir bir çıktı elde etmek adına tekrar `list(...)` ile sarmalanmaları gerekir. Bu da parantez karmaşasına ve görsel gürültüye yol açar.
+* **`reduce`:** İşlevsel programlamadan gelen güçlü bir araç olmasına rağmen, akümülatör ve eleman ilişkisi karmaşıklaştıkça kodun tek bakışta anlaşılmasını zorlaştırır. Bu nedenle Python 3'te yerleşik fonksiyonlar arasından çıkarılıp `functools` modülüne taşınmıştır.
+* **Liste Üreteçleri (List Comprehensions) ve `sum()`:** Matematikteki küme gösterimine benzer bir söz dizimine sahiptir (`[ifade for oge in koleksiyon if kosul]`). Ne yapıldığı (dönüşüm, filtreleme) doğrudan ve açıkça okunur. Bu nedenle Python topluluğunda liste üreteçleri ve yerleşik `sum()` fonksiyonu çok daha **okunaklı, temiz ve Pythonic** kabul edilir.
+
+---
+
+## Bonus (+10 Puan) – Meşgul Bekleme (Busy Waiting) ve `time.sleep` Farkı
+
+`tik_tak_programi`, `zamanlayici(aralik)` üretecini kullanarak 10 saniye boyunca her 2 saniyede "tik", her 5 saniyede "tak" yazdırır.
+
+### Neden "Meşgul Bekleme" (Busy Waiting)?
+Bu programda zamanın dolup dolmadığı, CPU'nun kesintisiz bir `while` döngüsü içinde sürekli olarak `time.perf_counter()` değerini sorgulaması (polling) ile kontrol edilir. İşlemci bu süreçte hiçbir zaman boşta kalmaz; çekirdek sürekli döngü komutlarını çalıştırarak **%100 CPU kullanımına** ve gereksiz güç/enerji tüketimine yol açar.
+
+### `time.sleep()` ile Farkı:
+1. **İşletim Sistemi Seviyesinde Durum:**
+   * `time.sleep(sure)` çağrıldığında, Python süreci işletim sistemi çekirdeğine (OS kernel) bir sistem çağrısı yapar.
+   * İşletim sistemi bu iş parçacığını (thread) **UYKU / BEKLEME (BLOCKED)** durumuna geçirir ve CPU zamanlayıcısı bu çekirdeği diğer çalışan programlara devreder.
+   * Süre dolana kadar işlemci bu iş parçacığı için **%0 CPU harcar**. Süre dolduğunda donanım zamanlayıcı kesmesi (timer interrupt) ile iş parçacığı tekrar **HAZIR (READY)** durumuna getirilir.
+2. **Kullanım Alanları:**
+   * **`time.sleep()`**: Standart gecikmeler, arka plan görevleri ve enerji verimliliği için tercih edilir.
+   * **Meşgul Bekleme (Busy Waiting)**: Ancak donanım seviyesinde mikrosaniyelik/nanosaniyelik ultra düşük gecikme gereken durumlarda (işletim sistemi bağlam değişim [context switch] maliyetini ortadan kaldırmak için) veya kütüphanelerin işbirlikçi döngülerinde (cooperative multitasking) kullanılır.
+
+---
+
+## Testleri Çalıştırma
+
+Tüm testleri çalıştırmak için:
+```bash
+uv run pytest
+```
+
