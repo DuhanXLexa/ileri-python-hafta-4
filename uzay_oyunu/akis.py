@@ -99,3 +99,37 @@ def uzun_yolculuklar(
             yield kayit
 
 
+def rota_sayaci(baglantilar: dict[str, list[str]]):
+    """Verilen baglantilar uzerinde rota sayimi yapan onbellekli fonksiyon dondurur.
+
+    Icinde @lru_cache ile suslenmis rota_sayisi(gezegen, adim) fonksiyonunu
+    tanimlayip dondurur.
+
+    Args:
+        baglantilar: Gezegenlerin komsuluk baglantilarini tutan sozluk.
+
+    Returns:
+        Callable[[str, int], int]: rota_sayisi fonksiyonu.
+    """
+    from functools import lru_cache
+
+    @lru_cache(maxsize=None)
+    def rota_sayisi(gezegen: str, adim: int) -> int:
+        """Verilen gezegenden baslayip tam 'adim' kadar yolculuk yapan farkli rotalarin sayisi.
+
+        Args:
+            gezegen: Baslangic gezegeni.
+            adim: Atilacak adim sayisi.
+
+        Returns:
+            int: Farkli rotalarin toplam sayisi.
+        """
+        if adim == 0:
+            return 1
+        komsular = baglantilar.get(gezegen, [])
+        return sum(rota_sayisi(komsu, adim - 1) for komsu in komsular)
+
+    return rota_sayisi
+
+
+

@@ -119,3 +119,47 @@ def test_boru_hatti_tembel_degerlendirme():
     assert isinstance(g_uzun, types.GeneratorType)
 
 
+# ==========================================
+# Görev 4 – Önbellekli rota sayacı testleri
+# ==========================================
+
+def test_rota_sayaci_ornek_galaksi():
+    """Odev dokumanindaki 10 baglantili ornek galaksi ciktilari testi:
+    say("dünya", 3) -> 9, say("dünya", 10) -> 2185, say("dünya", 40) -> 16832258606399
+    """
+    from uzay_oyunu.akis import rota_sayaci
+
+    baglantilar = {
+        "dünya": ["centauri", "sirius"],
+        "centauri": ["dünya", "orion"],
+        "sirius": ["dünya", "orion", "kara_delik"],
+        "orion": ["centauri", "sirius"],
+        "kara_delik": ["sirius"],
+    }
+    say = rota_sayaci(baglantilar)
+    assert say("dünya", 3) == 9
+    assert say("dünya", 10) == 2185
+    assert say("dünya", 40) == 16832258606399
+
+
+def test_rota_sayaci_galaksi_json():
+    """Projedeki galaksi.json ile onbellekli rota sayaci calisma ve cache_info testi."""
+    import json
+    from pathlib import Path
+    from uzay_oyunu.akis import rota_sayaci
+
+    yol = Path(__file__).parent.parent / "uzay_oyunu" / "galaksi.json"
+    with open(yol, encoding="utf-8") as f:
+        galaksi = json.load(f)
+
+    say = rota_sayaci(galaksi["baglantilar"])
+    assert say("dünya", 0) == 1
+    sonuc_3 = say("dünya", 3)
+    assert sonuc_3 == 16
+
+    info = say.cache_info()
+    assert info.hits > 0
+    assert info.currsize > 0
+
+
+
