@@ -1,6 +1,6 @@
 # ad soyad duhan goksal
 # ogrenci numarasi 20253004040
-# tarih 11 10 2026
+# tarih 18 10 2026
 # uzay oyunu ana modul - saf fonksiyonlar, galaksi_kur ve travel
 
 import json
@@ -54,12 +54,18 @@ def travel() -> None:
     except ModuleNotFoundError:
         from araclar import hamle_sayaci
 
+    try:
+        from uzay_oyunu.akis import yakit_gostergesi
+    except ModuleNotFoundError:
+        from akis import yakit_gostergesi
+
     # galaksi verisini json dosyasindan yukle
     veri_yolu = Path(__file__).parent / "galaksi.json"
     with open(veri_yolu, encoding="utf-8") as f:
         veri = json.load(f)
 
     galaksi = galaksi_kur(**veri)
+    gosterge = yakit_gostergesi(galaksi["yakit"], 5)
 
     # oyun durumu
     credits = False
@@ -100,7 +106,7 @@ def travel() -> None:
 
         # yakit kontrolu
         if galaksi["yakit"] <= 0:
-            print("\nYakitin bitti! Oyun bitti.")
+            print("\nYakıtın bitti, uzayda sürükleniyorsun...")
             print(f"Toplam {toplam_hamle} hamle yaptin.")
             break
 
@@ -123,7 +129,12 @@ def travel() -> None:
 
         yeni_gezegen = hedefler[secim]
         galaksi["konum"] = yeni_gezegen
-        galaksi["yakit"] -= 10
+        try:
+            galaksi["yakit"] = next(gosterge)
+        except StopIteration:
+            print("\nYakıtın bitti, uzayda sürükleniyorsun...")
+            print(f"Toplam {toplam_hamle} hamle yaptin.")
+            break
         toplam_hamle = sayac()
 
         print(f"\n{planet} -> {yeni_gezegen} yolculugu...")

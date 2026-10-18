@@ -43,3 +43,36 @@ def test_fibonacci_tek_kullanimlik():
     assert ilk_bes == [0, 1, 1, 2, 3]
     assert ikinci_bes == [5, 8, 13, 21, 34]
     assert ilk_bes != ikinci_bes
+
+
+# ==========================================
+# Görev 2 – Yakıt göstergesi testleri
+# ==========================================
+
+def test_yakit_gostergesi_ornek_cikti():
+    """Odev dokumanindaki list(yakit_gostergesi(100, 30)) ciktisi testi."""
+    from uzay_oyunu.akis import yakit_gostergesi
+    assert list(yakit_gostergesi(100, 30)) == [70, 40, 10, 0]
+
+
+def test_yakit_gostergesi_stop_iteration():
+    """Yakit 0'a ulasinca sonraki cagrilista StopIteration firlatildigini test eder."""
+    from uzay_oyunu.akis import yakit_gostergesi
+    gosterge = yakit_gostergesi(20, 10)
+    assert next(gosterge) == 10
+    assert next(gosterge) == 0
+    with pytest.raises(StopIteration):
+        next(gosterge)
+
+
+def test_yakit_gostergesi_sifir_baslangic():
+    """Yakit bastan 0 ise hicbir deger uretilmeden durmalidir."""
+    from uzay_oyunu.akis import yakit_gostergesi
+    assert list(yakit_gostergesi(0, 10)) == []
+
+
+def test_yakit_gostergesi_tek_adimda_tukenme():
+    """Tuketim yakittan buyukse dogrudan 0 uretmeli ve bitmelidir."""
+    from uzay_oyunu.akis import yakit_gostergesi
+    assert list(yakit_gostergesi(15, 25)) == [0]
+

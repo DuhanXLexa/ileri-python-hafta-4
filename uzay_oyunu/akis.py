@@ -20,3 +20,23 @@ def fibonacci() -> Generator[int, None, None]:
     while True:
         yield a
         a, b = b, a + b
+
+
+def yakit_gostergesi(yakit: int, tuketim: int) -> Generator[int, None, None]:
+    """Her next() cagrisinda yakiti tuketim kadar azaltip kalan yakiti uretir.
+
+    Kalan yakit 0'in altina inemez (en az 0 olur). Yakit 0'a ulasinca durur
+    ve bir sonraki cagrilista StopIteration firlatir.
+
+    Args:
+        yakit: Baslangic yakit miktari.
+        tuketim: Her adimdaki yakit tuketimi.
+
+    Yields:
+        int: Kalan yakit miktari.
+    """
+    kalan: int = yakit
+    while kalan > 0:
+        kalan = max(0, kalan - tuketim)
+        yield kalan
+
