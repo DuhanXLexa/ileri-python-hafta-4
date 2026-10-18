@@ -162,4 +162,81 @@ def test_rota_sayaci_galaksi_json():
     assert info.currsize > 0
 
 
+# ==========================================
+# Görev 5 – map, filter, reduce ve partial testleri
+# ==========================================
+
+@pytest.fixture
+def ornek_galaksi_verisi():
+    """Odev dokumanindaki 10 baglantili ornek galaksi verisi."""
+    return {
+        "gezegenler": ["dünya", "centauri", "sirius", "orion", "kara_delik"],
+        "baglantilar": {
+            "dünya": ["centauri", "sirius"],
+            "centauri": ["dünya", "orion"],
+            "sirius": ["dünya", "orion", "kara_delik"],
+            "orion": ["centauri", "sirius"],
+            "kara_delik": ["sirius"],
+        },
+    }
+
+
+def test_buyuk_harfli_gezegenler_iki_yolla(ornek_galaksi_verisi):
+    """Soru 1: map ve liste ureteci ile buyuk harf listesi testi."""
+    from uzay_oyunu.istatistik import (
+        buyuk_harfli_gezegenler_map,
+        buyuk_harfli_gezegenler_comp,
+    )
+    beklenen = ["DÜNYA", "CENTAURI", "SIRIUS", "ORION", "KARA_DELIK"]
+    sonuc_map = buyuk_harfli_gezegenler_map(ornek_galaksi_verisi)
+    sonuc_comp = buyuk_harfli_gezegenler_comp(ornek_galaksi_verisi)
+
+    assert sonuc_map == beklenen
+    assert sonuc_comp == beklenen
+    assert sonuc_map == sonuc_comp
+
+
+def test_cok_baglantili_gezegenler_iki_yolla(ornek_galaksi_verisi):
+    """Soru 2: filter ve liste ureteci ile en az iki baglantili gezegenler testi."""
+    from uzay_oyunu.istatistik import (
+        cok_baglantili_gezegenler_filter,
+        cok_baglantili_gezegenler_comp,
+    )
+    beklenen = ["dünya", "centauri", "sirius", "orion"]
+    sonuc_filter = cok_baglantili_gezegenler_filter(ornek_galaksi_verisi, 2)
+    sonuc_comp = cok_baglantili_gezegenler_comp(ornek_galaksi_verisi, 2)
+
+    assert sonuc_filter == beklenen
+    assert sonuc_comp == beklenen
+    assert sonuc_filter == sonuc_comp
+
+
+def test_toplam_baglanti_sayisi_iki_yolla(ornek_galaksi_verisi):
+    """Soru 3: reduce ve sum() ile toplam baglanti sayisi (10) testi."""
+    from uzay_oyunu.istatistik import (
+        toplam_baglanti_sayisi_reduce,
+        toplam_baglanti_sayisi_sum,
+    )
+    sonuc_reduce = toplam_baglanti_sayisi_reduce(ornek_galaksi_verisi)
+    sonuc_sum = toplam_baglanti_sayisi_sum(ornek_galaksi_verisi)
+
+    assert sonuc_reduce == 10
+    assert sonuc_sum == 10
+    assert sonuc_reduce == sonuc_sum
+
+
+def test_hizli_yolculuk_partial():
+    """functools.partial ile turetilen hizli_yolculuk fonksiyonu testi."""
+    from uzay_oyunu.istatistik import yolculuk, hizli_yolculuk
+
+    assert hizli_yolculuk.func == yolculuk
+    assert hizli_yolculuk.keywords == {"hiz": 3.0}
+
+    # mesafe 30 ise 30 / 3 = 10.0 olmalidir
+    assert hizli_yolculuk(30) == 10.0
+    assert hizli_yolculuk(9) == 3.0
+    assert yolculuk(30, 3.0) == hizli_yolculuk(30)
+
+
+
 
