@@ -1,6 +1,6 @@
 # ad soyad duhan goksal
 # ogrenci numarasi 20253004040
-# tarih 11 10 2026
+# tarih 18 10 2026
 # mutable default argument tuzagi testi
 
 def yakit_ekle(miktar: int, depo: list[int] | None = None) -> list[int]:

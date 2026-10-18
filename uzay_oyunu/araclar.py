@@ -1,6 +1,6 @@
 # ad soyad duhan goksal
 # ogrenci numarasi 20253004040
-# tarih 11 10 2026
+# tarih 18 10 2026
 # closure, lambda ve bonus sure olcer
 
 import time
